@@ -4,13 +4,19 @@ export default class HeadPlugin extends Plugin {
 	name = 'HeadPlugin';
 
 	mount() {
-		this.swup.on('contentReplaced', () => {
-			const headChildren = this.getHeadChildren();
-			const nextHeadChildren = this.getNextHeadChildren();
-
-			this.replaceTags(headChildren, nextHeadChildren);
-		});
+		this.swup.on('contentReplaced', this.getHeadAndReplace);
 	}
+
+	unmount() {
+		this.swup.off('contentReplaced', this.getHeadAndReplace);
+	}
+
+	getHeadAndReplace = () => {
+		const headChildren = this.getHeadChildren();
+		const nextHeadChildren = this.getNextHeadChildren();
+
+		this.replaceTags(headChildren, nextHeadChildren);
+	};
 
 	getHeadChildren = () => {
 		return document.head.children;

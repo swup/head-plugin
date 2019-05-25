@@ -148,7 +148,12 @@ var HeadPlugin = function (_Plugin) {
 			args[_key] = arguments[_key];
 		}
 
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = HeadPlugin.__proto__ || Object.getPrototypeOf(HeadPlugin)).call.apply(_ref, [this].concat(args))), _this), _this.name = 'HeadPlugin', _this.getHeadChildren = function () {
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = HeadPlugin.__proto__ || Object.getPrototypeOf(HeadPlugin)).call.apply(_ref, [this].concat(args))), _this), _this.name = 'HeadPlugin', _this.getHeadAndReplace = function () {
+			var headChildren = _this.getHeadChildren();
+			var nextHeadChildren = _this.getNextHeadChildren();
+
+			_this.replaceTags(headChildren, nextHeadChildren);
+		}, _this.getHeadChildren = function () {
 			return document.head.children;
 		}, _this.getNextHeadChildren = function () {
 			var pageContent = _this.swup.cache.getCurrentPage().originalContent.replace('<head', '<div id="swupHead"').replace('</head>', '</div>');
@@ -225,14 +230,12 @@ var HeadPlugin = function (_Plugin) {
 	_createClass(HeadPlugin, [{
 		key: 'mount',
 		value: function mount() {
-			var _this2 = this;
-
-			this.swup.on('contentReplaced', function () {
-				var headChildren = _this2.getHeadChildren();
-				var nextHeadChildren = _this2.getNextHeadChildren();
-
-				_this2.replaceTags(headChildren, nextHeadChildren);
-			});
+			this.swup.on('contentReplaced', this.getHeadAndReplace);
+		}
+	}, {
+		key: 'unmount',
+		value: function unmount() {
+			this.swup.off('contentReplaced', this.getHeadAndReplace);
 		}
 	}]);
 
