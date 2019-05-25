@@ -138,17 +138,19 @@ var HeadPlugin = function (_Plugin) {
 	_inherits(HeadPlugin, _Plugin);
 
 	function HeadPlugin() {
+		var _ref;
+
+		var _temp, _this, _ret;
+
 		_classCallCheck(this, HeadPlugin);
 
-		var _this = _possibleConstructorReturn(this, (HeadPlugin.__proto__ || Object.getPrototypeOf(HeadPlugin)).call(this));
+		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+			args[_key] = arguments[_key];
+		}
 
-		_this.name = 'HeadPlugin';
-
-		_this.getHeadChildren = function () {
+		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = HeadPlugin.__proto__ || Object.getPrototypeOf(HeadPlugin)).call.apply(_ref, [this].concat(args))), _this), _this.name = 'HeadPlugin', _this.getHeadChildren = function () {
 			return document.head.children;
-		};
-
-		_this.getNextHeadChildren = function () {
+		}, _this.getNextHeadChildren = function () {
 			var pageContent = _this.swup.cache.getCurrentPage().originalContent.replace('<head', '<div id="swupHead"').replace('</head>', '</div>');
 			var element = document.createElement('div');
 			element.innerHTML = pageContent;
@@ -159,9 +161,7 @@ var HeadPlugin = function (_Plugin) {
 			element = null;
 
 			return children;
-		};
-
-		_this.replaceTags = function (oldTags, newTags) {
+		}, _this.replaceTags = function (oldTags, newTags) {
 			var head = document.head;
 			var themeActive = Boolean(document.querySelector('[data-swup-theme]'));
 			var addTags = _this.getTagsToAdd(oldTags, newTags, themeActive);
@@ -176,16 +176,12 @@ var HeadPlugin = function (_Plugin) {
 			});
 
 			_this.swup.log('Removed ' + removeTags.length + ' / added ' + addTags.length + ' tags in head');
-		};
-
-		_this.compareTags = function (oldTag, newTag) {
+		}, _this.compareTags = function (oldTag, newTag) {
 			var oldTagContent = oldTag.outerHTML;
 			var newTagContent = newTag.outerHTML;
 
 			return oldTagContent === newTagContent;
-		};
-
-		_this.getTagsToRemove = function (oldTags, newTags) {
+		}, _this.getTagsToRemove = function (oldTags, newTags) {
 			var removeTags = [];
 
 			for (var i = 0; i < oldTags.length; i++) {
@@ -204,9 +200,7 @@ var HeadPlugin = function (_Plugin) {
 			}
 
 			return removeTags;
-		};
-
-		_this.getTagsToAdd = function (oldTags, newTags, themeActive) {
+		}, _this.getTagsToAdd = function (oldTags, newTags, themeActive) {
 			var addTags = [];
 
 			for (var i = 0; i < newTags.length; i++) {
@@ -225,9 +219,7 @@ var HeadPlugin = function (_Plugin) {
 			}
 
 			return addTags;
-		};
-
-		return _this;
+		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
 	_createClass(HeadPlugin, [{

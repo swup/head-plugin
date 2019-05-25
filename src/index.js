@@ -3,10 +3,6 @@ import Plugin from '@swup/plugin';
 export default class HeadPlugin extends Plugin {
 	name = 'HeadPlugin';
 
-	constructor() {
-		super();
-	}
-
 	mount() {
 		this.swup.on('contentReplaced', () => {
 			const headChildren = this.getHeadChildren();
