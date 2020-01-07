@@ -173,11 +173,15 @@ var HeadPlugin = function (_Plugin) {
 			var removeTags = _this.getTagsToRemove(oldTags, newTags, themeActive);
 
 			removeTags.reverse().forEach(function (item) {
-				head.removeChild(item.tag);
+				if (item.tag.getAttribute("data-swup-ignore-head-element") === null) {
+					head.removeChild(item.tag);
+				}
 			});
 
 			addTags.forEach(function (item) {
-				head.insertBefore(item.tag, head.children[item.index]);
+				if (item.tag.getAttribute("data-swup-ignore-head-element") === null) {
+					head.insertBefore(item.tag, head.children[item.index]);
+				}
 			});
 
 			_this.swup.log('Removed ' + removeTags.length + ' / added ' + addTags.length + ' tags in head');

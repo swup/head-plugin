@@ -45,11 +45,15 @@ export default class HeadPlugin extends Plugin {
 		const removeTags = this.getTagsToRemove(oldTags, newTags, themeActive);
 
 		removeTags.reverse().forEach((item) => {
-			head.removeChild(item.tag);
+			if (item.tag.getAttribute("data-swup-ignore-head-element") === null) {
+				head.removeChild(item.tag);
+			}
 		});
 
 		addTags.forEach((item) => {
-			head.insertBefore(item.tag, head.children[item.index]);
+			if (item.tag.getAttribute("data-swup-ignore-head-element") === null) {
+				head.insertBefore(item.tag, head.children[item.index]);
+			}
 		});
 
 		this.swup.log(`Removed ${removeTags.length} / added ${addTags.length} tags in head`);
