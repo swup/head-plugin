@@ -224,6 +224,16 @@ var HeadPlugin = function (_Plugin) {
 			}
 
 			return addTags;
+		}, _this.updateHtmlLangAttribute = function () {
+			var html = document.documentElement;
+
+			var newPage = new DOMParser().parseFromString(_this.swup.cache.getCurrentPage().originalContent, 'text/html');
+			var newLang = newPage.documentElement.lang;
+
+			if (html.lang !== newLang) {
+				_this.swup.log('Updated lang attribute: ' + html.lang + ' > ' + newLang);
+				html.lang = newLang;
+			}
 		}, _temp), _possibleConstructorReturn(_this, _ret);
 	}
 
@@ -231,11 +241,13 @@ var HeadPlugin = function (_Plugin) {
 		key: 'mount',
 		value: function mount() {
 			this.swup.on('contentReplaced', this.getHeadAndReplace);
+			this.swup.on('contentReplaced', this.updateHtmlLangAttribute);
 		}
 	}, {
 		key: 'unmount',
 		value: function unmount() {
 			this.swup.off('contentReplaced', this.getHeadAndReplace);
+			this.swup.off('contentReplaced', this.updateHtmlLangAttribute);
 		}
 	}]);
 
