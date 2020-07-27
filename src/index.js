@@ -25,10 +25,12 @@ export default class HeadPlugin extends Plugin {
 
 	mount() {
 		this.swup.on('contentReplaced', this.getHeadAndReplace);
+		this.swup.on('contentReplaced', this.updateHtmlLangAttribute);
 	}
 
 	unmount() {
 		this.swup.off('contentReplaced', this.getHeadAndReplace);
+		this.swup.off('contentReplaced', this.updateHtmlLangAttribute);
 	}
 
 	getHeadAndReplace = () => {
@@ -133,5 +135,20 @@ export default class HeadPlugin extends Plugin {
 			return item.matches(persistTags);
 		}
 		return Boolean(persistTags);
+	};
+
+	updateHtmlLangAttribute = () => {
+		const html = document.documentElement;
+
+		const newPage = new DOMParser().parseFromString(
+			this.swup.cache.getCurrentPage().originalContent,
+			'text/html'
+		);
+		const newLang = newPage.documentElement.lang;
+
+		if (html.lang !== newLang) {
+			this.swup.log(`Updated lang attribute: ${html.lang} > ${newLang}`);
+			html.lang = newLang;
+		}
 	};
 }
