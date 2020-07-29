@@ -120,6 +120,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _plugin = __webpack_require__(2);
@@ -137,25 +139,29 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var HeadPlugin = function (_Plugin) {
 	_inherits(HeadPlugin, _Plugin);
 
-	function HeadPlugin() {
-		var _ref;
-
-		var _temp, _this, _ret;
-
+	function HeadPlugin(options) {
 		_classCallCheck(this, HeadPlugin);
 
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
+		var _this = _possibleConstructorReturn(this, (HeadPlugin.__proto__ || Object.getPrototypeOf(HeadPlugin)).call(this));
 
-		return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = HeadPlugin.__proto__ || Object.getPrototypeOf(HeadPlugin)).call.apply(_ref, [this].concat(args))), _this), _this.name = 'HeadPlugin', _this.getHeadAndReplace = function () {
+		_this.name = 'HeadPlugin';
+		_this.defaultOptions = {
+			persistTags: false,
+			persistAssets: false
+		};
+
+		_this.getHeadAndReplace = function () {
 			var headChildren = _this.getHeadChildren();
 			var nextHeadChildren = _this.getNextHeadChildren();
 
 			_this.replaceTags(headChildren, nextHeadChildren);
-		}, _this.getHeadChildren = function () {
+		};
+
+		_this.getHeadChildren = function () {
 			return document.head.children;
-		}, _this.getNextHeadChildren = function () {
+		};
+
+		_this.getNextHeadChildren = function () {
 			var pageContent = _this.swup.cache.getCurrentPage().originalContent.replace('<head', '<div id="swupHead"').replace('</head>', '</div>');
 			var element = document.createElement('div');
 			element.innerHTML = pageContent;
@@ -166,7 +172,9 @@ var HeadPlugin = function (_Plugin) {
 			element = null;
 
 			return children;
-		}, _this.replaceTags = function (oldTags, newTags) {
+		};
+
+		_this.replaceTags = function (oldTags, newTags) {
 			var head = document.head;
 			var themeActive = Boolean(document.querySelector('[data-swup-theme]'));
 			var addTags = _this.getTagsToAdd(oldTags, newTags, themeActive);
@@ -181,12 +189,16 @@ var HeadPlugin = function (_Plugin) {
 			});
 
 			_this.swup.log('Removed ' + removeTags.length + ' / added ' + addTags.length + ' tags in head');
-		}, _this.compareTags = function (oldTag, newTag) {
+		};
+
+		_this.compareTags = function (oldTag, newTag) {
 			var oldTagContent = oldTag.outerHTML;
 			var newTagContent = newTag.outerHTML;
 
 			return oldTagContent === newTagContent;
-		}, _this.getTagsToRemove = function (oldTags, newTags) {
+		};
+
+		_this.getTagsToRemove = function (oldTags, newTags) {
 			var removeTags = [];
 
 			for (var i = 0; i < oldTags.length; i++) {
@@ -199,13 +211,15 @@ var HeadPlugin = function (_Plugin) {
 					}
 				}
 
-				if (foundAt == null && oldTags[i].getAttribute('data-swup-theme') === null) {
+				if (foundAt == null && oldTags[i].getAttribute('data-swup-theme') === null && !_this.isPersistentTag(oldTags[i])) {
 					removeTags.push({ tag: oldTags[i] });
 				}
 			}
 
 			return removeTags;
-		}, _this.getTagsToAdd = function (oldTags, newTags, themeActive) {
+		};
+
+		_this.getTagsToAdd = function (oldTags, newTags, themeActive) {
 			var addTags = [];
 
 			for (var i = 0; i < newTags.length; i++) {
@@ -224,7 +238,28 @@ var HeadPlugin = function (_Plugin) {
 			}
 
 			return addTags;
-		}, _temp), _possibleConstructorReturn(_this, _ret);
+		};
+
+		_this.isPersistentTag = function (item) {
+			var persistTags = _this.options.persistTags;
+
+			if (typeof persistTags === 'function') {
+				return persistTags(item);
+			}
+			if (typeof persistTags === 'string') {
+				return item.matches(persistTags);
+			}
+			return Boolean(persistTags);
+		};
+
+		_this.options = _extends({}, _this.defaultOptions, options);
+
+		// options.persistAssets is a shortcut to:
+		// options.persistTags with a default asset selector for scripts & styles
+		if (_this.options.persistAssets && !_this.options.persistTags) {
+			_this.options.persistTags = 'link[rel=stylesheet], script[src], style';
+		}
+		return _this;
 	}
 
 	_createClass(HeadPlugin, [{
