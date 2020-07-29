@@ -3,6 +3,26 @@ import Plugin from '@swup/plugin';
 export default class HeadPlugin extends Plugin {
 	name = 'HeadPlugin';
 
+	defaultOptions = {
+		persistTags: false,
+		persistAssets: false
+	};
+
+	constructor(options) {
+		super();
+
+		this.options = {
+			...this.defaultOptions,
+			...options
+		};
+
+		// options.persistAssets is a shortcut to:
+		// options.persistTags with a default asset selector for scripts & styles
+		if (this.options.persistAssets && !this.options.persistTags) {
+			this.options.persistTags = 'link[rel=stylesheet], script[src], style';
+		}
+	}
+
 	mount() {
 		this.swup.on('contentReplaced', this.getHeadAndReplace);
 	}
@@ -75,7 +95,7 @@ export default class HeadPlugin extends Plugin {
 				}
 			}
 
-			if (foundAt == null && oldTags[i].getAttribute('data-swup-theme') === null) {
+			if (foundAt == null && oldTags[i].getAttribute('data-swup-theme') === null && !this.isPersistentTag(oldTags[i])) {
 				removeTags.push({ tag: oldTags[i] });
 			}
 		}
@@ -102,5 +122,16 @@ export default class HeadPlugin extends Plugin {
 		}
 
 		return addTags;
+	};
+
+	isPersistentTag = (item) => {
+		const { persistTags } = this.options
+		if (typeof persistTags === 'function') {
+			return persistTags(item);
+		}
+		if (typeof persistTags === 'string') {
+			return item.matches(persistTags);
+		}
+		return Boolean(persistTags);
 	};
 }
