@@ -232,7 +232,7 @@ var HeadPlugin = function (_Plugin) {
 					}
 				}
 
-				if (foundAt == null) {
+				if (foundAt == null && newTags[i].getAttribute('data-swup-theme') === null && !_this.isPersistentTag(newTags[i])) {
 					addTags.push({ index: themeActive ? i + 1 : i, tag: newTags[i] });
 				}
 			}

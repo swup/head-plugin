@@ -118,7 +118,11 @@ export default class HeadPlugin extends Plugin {
 				}
 			}
 
-			if (foundAt == null) {
+			if (
+				foundAt == null &&
+				newTags[i].getAttribute('data-swup-theme') === null &&
+				!this.isPersistentTag(newTags[i])
+			) {
 				addTags.push({ index: themeActive ? i + 1 : i, tag: newTags[i] });
 			}
 		}
