@@ -71,7 +71,8 @@ export default class HeadPlugin extends Plugin {
 		});
 
 		addTags.forEach((item) => {
-			head.insertBefore(item.tag, head.children[item.index]);
+			// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascaade
+			head.insertBefore(item.tag, head.children[item.index + 1] || null);
 		});
 
 		this.swup.log(`Removed ${removeTags.length} / added ${addTags.length} tags in head`);
