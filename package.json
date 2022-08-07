@@ -1,6 +1,6 @@
 {
   "name": "@swup/head-plugin",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Swup plugin for replacing contents of head tag.",
   "main": "lib/index.js",
   "scripts": {
