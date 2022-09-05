@@ -30,8 +30,8 @@ export default class HeadPlugin extends Plugin {
 		this.swup.on('contentReplaced', this.getHeadAndReplace);
 		this.swup.on('contentReplaced', this.updateHtmlLangAttribute);
 		if (this.options.awaitAssets) {
-			this.originalSwupGetAnimationPromises = this.swup.getAnimationPromises;
-			this.swup.getAnimationPromises = this.getDelayedAnimationPromises;
+			this.originalSwupGetAnimationPromises = this.swup.getAnimationPromises.bind(this.swup);
+			this.swup.getAnimationPromises = this.getDelayedAnimationPromises.bind(this);
 		}
 	}
 
@@ -78,7 +78,15 @@ export default class HeadPlugin extends Plugin {
 		const removeTags = this.getTagsToRemove(oldTags, newTags, themeActive);
 
 		if (this.options.awaitAssets) {
-			this.assetLoadPromises = this.getAssetLoadPromises(addTags);
+			this.assetLoadPromises = this.getAssetLoadPromises(addTags.map((item) => item.tag));
+			if (this.assetLoadPromises.length) {
+				this.swup.log('Awaiting assets');
+				document.documentElement.classList.add('is-awaiting-assets');
+				Promise.all(this.assetLoadPromises).then(() => {
+					this.swup.log('Assets loaded');
+					document.documentElement.classList.remove('is-awaiting-assets');
+				});
+			}
 		}
 
 		removeTags.reverse().forEach((item) => {
@@ -156,6 +164,7 @@ export default class HeadPlugin extends Plugin {
 	getDelayedAnimationPromises = (type) => {
 		const animationPromises = this.originalSwupGetAnimationPromises(type);
 		if (type === 'in' && this.assetLoadPromises.length) {
+			console.log('Adding promises', this.assetLoadPromises);
 			animationPromises.push(...this.assetLoadPromises);
 		}
 		return animationPromises;
