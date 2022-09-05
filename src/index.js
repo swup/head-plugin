@@ -5,8 +5,11 @@ export default class HeadPlugin extends Plugin {
 
 	defaultOptions = {
 		persistTags: false,
-		persistAssets: false
+		persistAssets: false,
+		awaitAssets: false
 	};
+
+	assetLoadPromises = [];
 
 	constructor(options) {
 		super();
@@ -26,11 +29,19 @@ export default class HeadPlugin extends Plugin {
 	mount() {
 		this.swup.on('contentReplaced', this.getHeadAndReplace);
 		this.swup.on('contentReplaced', this.updateHtmlLangAttribute);
+		if (this.options.awaitAssets) {
+			this.originalSwupGetAnimationPromises = this.swup.getAnimationPromises;
+			this.swup.getAnimationPromises = this.getDelayedAnimationPromises;
+		}
 	}
 
 	unmount() {
 		this.swup.off('contentReplaced', this.getHeadAndReplace);
 		this.swup.off('contentReplaced', this.updateHtmlLangAttribute);
+		if (this.options.awaitAssets) {
+			this.swup.getAnimationPromises = this.originalSwupGetAnimationPromises;
+			this.originalSwupGetAnimationPromises = null;
+		}
 	}
 
 	getHeadAndReplace = () => {
@@ -65,6 +76,10 @@ export default class HeadPlugin extends Plugin {
 		const themeActive = Boolean(document.querySelector('[data-swup-theme]'));
 		const addTags = this.getTagsToAdd(oldTags, newTags, themeActive);
 		const removeTags = this.getTagsToRemove(oldTags, newTags, themeActive);
+
+		if (this.options.awaitAssets) {
+			this.assetLoadPromises = this.getAssetLoadPromises(addTags);
+		}
 
 		removeTags.reverse().forEach((item) => {
 			head.removeChild(item.tag);
@@ -136,6 +151,36 @@ export default class HeadPlugin extends Plugin {
 			return item.matches(persistTags);
 		}
 		return Boolean(persistTags);
+	};
+
+	getDelayedAnimationPromises = (type) => {
+		const animationPromises = this.originalSwupGetAnimationPromises(type);
+		if (type === 'in' && this.assetLoadPromises.length) {
+			animationPromises.push(...this.assetLoadPromises);
+		}
+		return animationPromises;
+	};
+
+	getAssetLoadPromises = (tags) => {
+		return tags.map((tag) => {
+			if (tag.tagName === 'LINK') {
+				return this.whenStylesheetLoaded(tag);
+			}
+		}).filter(Boolean);
+	};
+
+	whenStylesheetLoaded = (link) => {
+		const whenLoaded = (cb) => {
+			const { href } = link;
+			const loadedStyleSheets = Array.from(document.styleSheets).map((ss) => ss.href);
+			if (loadedStyleSheets.includes(href)) {
+				cb();
+			} else {
+				setTimeout(() => whenLoaded(cb));
+			}
+		};
+
+		return new Promise((resolve) => whenLoaded(resolve));
 	};
 
 	updateHtmlLangAttribute = () => {
