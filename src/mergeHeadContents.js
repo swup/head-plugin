@@ -2,8 +2,12 @@ import compareTags from './compareTags.js';
 
 export default function mergeHeadContents(currentHead, newHead, { shouldPersist = () => false } = {}) {
 	const themeActive = Boolean(document.querySelector('[data-swup-theme]'));
-	const addTags = getTagsToAdd(currentHead.children, newHead.children, { themeActive });
-	const removeTags = getTagsToRemove(currentHead.children, newHead.children);
+
+	const currentTags = Array.from(currentHead.children);
+	const newChildren = Array.from(newHead.children);
+
+	const addTags = getTagsToAdd(currentTags, newChildren, { themeActive });
+	const removeTags = getTagsToRemove(currentTags, newChildren);
 
 	// Remove tags in reverse to keep indexes, keep persistant elements
 	removeTags.reverse()
@@ -24,46 +28,26 @@ export default function mergeHeadContents(currentHead, newHead, { shouldPersist 
 	};
 };
 
-function getTagsToRemove(currentTags, newTags) {
-	const removeTags = [];
-
-	for (let i = 0; i < currentTags.length; i++) {
-		let foundAt = null;
-
-		for (let j = 0; j < newTags.length; j++) {
-			if (compareTags(currentTags[i], newTags[j])) {
-				foundAt = j;
-				break;
-			}
+function getTagsToRemove(currentEls, newEls) {
+	return currentEls.reduce((tags, el) => {
+		const isAmongNew = newEls.some((newEl) => compareTags(el, newEl));
+		const isThemeTag = el.matches('[data-swup-theme]');
+		if (!isAmongNew && !isThemeTag) {
+			tags.push({ el });
 		}
-
-		if (foundAt == null && currentTags[i].getAttribute('data-swup-theme') === null) {
-			removeTags.push({ el: currentTags[i] });
-		}
-	}
-
-	return removeTags;
+		return tags;
+	}, []);
 };
 
-function getTagsToAdd(currentTags, newTags, { themeActive }) {
-	const addTags = [];
-
-	for (let i = 0; i < newTags.length; i++) {
-		let foundAt = null;
-
-		for (let j = 0; j < currentTags.length; j++) {
-			if (compareTags(currentTags[j], newTags[i])) {
-				foundAt = j;
-				break;
-			}
+function getTagsToAdd(currentEls, newEls, { themeActive }) {
+	return newEls.reduce((tags, el, i) => {
+		const isAmongCurrent = currentEls.some((currentEl) => compareTags(el, currentEl));
+		if (!isAmongCurrent) {
+			const index = themeActive ? i + 1 : i;
+			tags.push({ el, index });
 		}
-
-		if (foundAt == null) {
-			addTags.push({ el: newTags[i], index: themeActive ? i + 1 : i });
-		}
-	}
-
-	return addTags;
+		return tags;
+	}, []);
 };
 
 function shouldManageTag(el) {
