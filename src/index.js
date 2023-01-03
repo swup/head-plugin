@@ -19,25 +19,11 @@ export default class HeadPlugin extends Plugin {
 			timeout: 3000,
 			...options
 		};
-
-		this.validateOptions();
-	}
-
-	validateOptions() {
-		// options.persistAssets is a shortcut for:
-		// options.persistTags with a default asset selector for scripts & styles
-		if (this.options.persistAssets && !this.options.persistTags) {
-			this.options.persistTags = 'link[rel=stylesheet], script[src], style';
-		}
-
-		// Make sure the swup version in use supports hooking into `replaceContent`
-		if (this.options.awaitAssets && !this.swup.replaceContent) {
-			this.options.awaitAssets = false;
-			console.error('[Swup Head Plugin] Installed version of swup doesn\'t support awaitAssets option');
-		}
 	}
 
 	mount() {
+		this.validateOptions();
+
 		// Replace head contents right before content itself
 		this.swup.on('willReplaceContent', this.updateHead);
 
@@ -57,6 +43,20 @@ export default class HeadPlugin extends Plugin {
 		}
 	}
 
+	validateOptions() {
+		// options.persistAssets is a shortcut for:
+		// options.persistTags with a default asset selector for scripts & styles
+		if (this.options.persistAssets && !this.options.persistTags) {
+			this.options.persistTags = 'link[rel=stylesheet], script[src], style';
+		}
+
+		// Make sure the swup version in use supports hooking into `replaceContent`
+		if (this.options.awaitAssets && !this.swup.replaceContent) {
+			this.options.awaitAssets = false;
+			console.error('[Swup Head Plugin] Installed version of swup doesn\'t support awaitAssets option');
+		}
+	}
+
 	updateHead = () => {
 		const newPageHtml = this.swup.cache.getCurrentPage().originalContent;
 		let newDocument = new DOMParser().parseFromString(newPageHtml, 'text/html');
@@ -70,7 +70,7 @@ export default class HeadPlugin extends Plugin {
 		}
 
 		if (this.options.awaitAssets) {
-			this.assetLoadPromises = waitForAssets(added);
+			this.assetLoadPromises = waitForAssets(added, this.options.timeout);
 		} else {
 			this.assetLoadPromises = [];
 		}
@@ -80,12 +80,19 @@ export default class HeadPlugin extends Plugin {
 	};
 
 	replaceContentAfterAssetsLoaded(...originalArgs) {
-		return new Promise((resolve) => {
-			Promise.all(this.assetLoadPromises).then(() => {
-				this.assetLoadPromises = [];
-				this.originalSwupReplaceContent(...originalArgs).then(resolve);
+		if (this.assetLoadPromises.length) {
+			this.swup.log(`Waiting for ${this.assetLoadPromises.length} assets to load`);
+			return new Promise((resolve) => {
+				Promise.all(this.assetLoadPromises).then(() => {
+					this.swup.log('All assets loaded');
+					this.assetLoadPromises = [];
+					this.originalSwupReplaceContent(...originalArgs).then(resolve);
+				});
 			});
-		});
+		} else {
+			this.swup.log('No assets');
+			return this.originalSwupReplaceContent(...originalArgs);
+		}
 	}
 
 	isPersistentTag = (el) => {

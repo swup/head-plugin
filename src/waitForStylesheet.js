@@ -1,8 +1,10 @@
 export default function waitForStylesheet(element, timeoutMs = 0) {
+  const isLoaded = ({ href }) => {
+    return Array.from(document.styleSheets).map(({ href }) => href).includes(href);
+  };
+
   const whenLoaded = (cb) => {
-    const { href } = element;
-    const loadedStyleSheets = Array.from(document.styleSheets).map(({ href }) => href);
-    if (loadedStyleSheets.includes(href)) {
+    if (isLoaded(element)) {
       cb();
     } else {
       setTimeout(() => whenLoaded(cb), 10);

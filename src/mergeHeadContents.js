@@ -7,13 +7,16 @@ export default function mergeHeadContents(currentHead, newHead, { shouldPersist 
 
 	// Remove tags in reverse to keep indexes, keep persistant elements
 	removeTags.reverse()
+		.filter(({ el }) => shouldManageTag(el))
 		.filter(({ el }) => !shouldPersist(el))
 		.forEach(({ el }) => currentHead.removeChild(el));
 
 	// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascaade
-	addTags.forEach(({ el, index }) => {
-		currentHead.insertBefore(el, currentHead.children[index + 1] || null);
-	});
+	addTags
+		.filter(({ el }) => shouldManageTag(el))
+		.forEach(({ el, index }) => {
+			currentHead.insertBefore(el, currentHead.children[index + 1] || null);
+		});
 
 	return {
 		removed: removeTags.map(({ el }) => el),
@@ -62,3 +65,7 @@ function getTagsToAdd(currentTags, newTags, { themeActive }) {
 
 	return addTags;
 };
+
+function shouldManageTag(el) {
+	return el.localName !== 'title'; // swup manages title itself
+}
