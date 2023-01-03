@@ -1,5 +1,3 @@
-import compareTags from './compareTags.js';
-
 export default function mergeHeadContents(currentHead, newHead, { shouldPersist = () => false } = {}) {
 	const themeActive = Boolean(document.querySelector('[data-swup-theme]'));
 
@@ -52,4 +50,8 @@ function getTagsToAdd(currentEls, newEls, { themeActive }) {
 
 function shouldManageTag(el) {
 	return el.localName !== 'title'; // swup manages title itself
+}
+
+function compareTags(oldTag, newTag) {
+	return oldTag.outerHTML === newTag.outerHTML;
 }

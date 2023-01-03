@@ -132,11 +132,11 @@ var _mergeHeadContents2 = __webpack_require__(3);
 
 var _mergeHeadContents3 = _interopRequireDefault(_mergeHeadContents2);
 
-var _updateLangAttribute = __webpack_require__(5);
+var _updateLangAttribute = __webpack_require__(4);
 
 var _updateLangAttribute2 = _interopRequireDefault(_updateLangAttribute);
 
-var _waitForAssets = __webpack_require__(6);
+var _waitForAssets = __webpack_require__(5);
 
 var _waitForAssets2 = _interopRequireDefault(_waitForAssets);
 
@@ -339,13 +339,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.default = mergeHeadContents;
-
-var _compareTags = __webpack_require__(4);
-
-var _compareTags2 = _interopRequireDefault(_compareTags);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function mergeHeadContents(currentHead, newHead) {
 	var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
 	    _ref$shouldPersist = _ref.shouldPersist,
@@ -399,7 +392,7 @@ function mergeHeadContents(currentHead, newHead) {
 function getTagsToRemove(currentEls, newEls) {
 	return currentEls.reduce(function (tags, el) {
 		var isAmongNew = newEls.some(function (newEl) {
-			return (0, _compareTags2.default)(el, newEl);
+			return compareTags(el, newEl);
 		});
 		var isThemeTag = el.matches('[data-swup-theme]');
 		if (!isAmongNew && !isThemeTag) {
@@ -414,7 +407,7 @@ function getTagsToAdd(currentEls, newEls, _ref9) {
 
 	return newEls.reduce(function (tags, el, i) {
 		var isAmongCurrent = currentEls.some(function (currentEl) {
-			return (0, _compareTags2.default)(el, currentEl);
+			return compareTags(el, currentEl);
 		});
 		if (!isAmongCurrent) {
 			var index = themeActive ? i + 1 : i;
@@ -428,23 +421,12 @@ function shouldManageTag(el) {
 	return el.localName !== 'title'; // swup manages title itself
 }
 
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = compareTags;
 function compareTags(oldTag, newTag) {
 	return oldTag.outerHTML === newTag.outerHTML;
-};
+}
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -464,7 +446,7 @@ function updateLangAttribute(currentHtml, newHtml) {
 };
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -475,7 +457,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = waitForAssets;
 
-var _waitForStylesheet = __webpack_require__(7);
+var _waitForStylesheet = __webpack_require__(6);
 
 var _waitForStylesheet2 = _interopRequireDefault(_waitForStylesheet);
 
@@ -492,7 +474,7 @@ function waitForAssets(elements) {
 };
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
