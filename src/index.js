@@ -84,13 +84,11 @@ export default class HeadPlugin extends Plugin {
 			this.swup.log(`Waiting for ${this.assetLoadPromises.length} assets to load`);
 			return new Promise((resolve) => {
 				Promise.all(this.assetLoadPromises).then(() => {
-					this.swup.log('All assets loaded');
 					this.assetLoadPromises = [];
 					this.originalSwupReplaceContent(...originalArgs).then(resolve);
 				});
 			});
 		} else {
-			this.swup.log('No assets');
 			return this.originalSwupReplaceContent(...originalArgs);
 		}
 	}
