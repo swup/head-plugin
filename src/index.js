@@ -1,155 +1,106 @@
 import Plugin from '@swup/plugin';
 
+import mergeHeadContents from './mergeHeadContents.js';
+import updateLangAttribute from './updateLangAttribute.js';
+import waitForAssets from './waitForAssets.js';
+
 export default class HeadPlugin extends Plugin {
 	name = 'HeadPlugin';
 
-	defaultOptions = {
-		persistTags: false,
-		persistAssets: false
-	};
+	assetLoadPromises = [];
 
-	constructor(options) {
+	constructor(options = {}) {
 		super();
 
 		this.options = {
-			...this.defaultOptions,
+			persistTags: false,
+			persistAssets: false,
+			awaitAssets: false,
+			timeout: 3000,
 			...options
 		};
+	}
 
-		// options.persistAssets is a shortcut to:
+	mount() {
+		this.validateOptions();
+
+		// Replace head contents right before content itself
+		this.swup.on('willReplaceContent', this.updateHead);
+
+		// Overwrite swup's replaceContent to let us defer until all assets are loaded
+		if (this.options.awaitAssets) {
+			this.originalSwupReplaceContent = this.swup.replaceContent.bind(this.swup);
+			this.swup.replaceContent = this.replaceContentAfterAssetsLoaded.bind(this);
+		}
+	}
+
+	unmount() {
+		this.swup.off('willReplaceContent', this.updateHead);
+
+		if (this.originalSwupReplaceContent) {
+			this.swup.replaceContent = this.originalSwupReplaceContent;
+			this.originalSwupReplaceContent = null;
+		}
+	}
+
+	validateOptions() {
+		// options.persistAssets is a shortcut for:
 		// options.persistTags with a default asset selector for scripts & styles
 		if (this.options.persistAssets && !this.options.persistTags) {
 			this.options.persistTags = 'link[rel=stylesheet], script[src], style';
 		}
+
+		// Make sure the swup version in use supports hooking into `replaceContent`
+		if (this.options.awaitAssets && !this.swup.replaceContent) {
+			this.options.awaitAssets = false;
+			console.error('[Swup Head Plugin] Installed version of swup doesn\'t support awaitAssets option');
+		}
 	}
 
-	mount() {
-		this.swup.on('contentReplaced', this.getHeadAndReplace);
-		this.swup.on('contentReplaced', this.updateHtmlLangAttribute);
-	}
+	updateHead = () => {
+		const newPageHtml = this.swup.cache.getCurrentPage().originalContent;
+		let newDocument = new DOMParser().parseFromString(newPageHtml, 'text/html');
 
-	unmount() {
-		this.swup.off('contentReplaced', this.getHeadAndReplace);
-		this.swup.off('contentReplaced', this.updateHtmlLangAttribute);
-	}
+		const { removed, added } = mergeHeadContents(document.head, newDocument.head, { shouldPersist: this.isPersistentTag });
+		const lang = updateLangAttribute(document.documentElement, newDocument.documentElement);
 
-	getHeadAndReplace = () => {
-		const headChildren = this.getHeadChildren();
-		const nextHeadChildren = this.getNextHeadChildren();
-
-		this.replaceTags(headChildren, nextHeadChildren);
-	};
-
-	getHeadChildren = () => {
-		return document.head.children;
-	};
-
-	getNextHeadChildren = () => {
-		const pageContent = this.swup.cache
-			.getCurrentPage()
-			.originalContent.replace('<head', '<div id="swupHead"')
-			.replace('</head>', '</div>');
-		let element = document.createElement('div');
-		element.innerHTML = pageContent;
-		const children = element.querySelector('#swupHead').children;
-
-		// cleanup
-		element.innerHTML = '';
-		element = null;
-
-		return children;
-	};
-
-	replaceTags = (oldTags, newTags) => {
-		const head = document.head;
-		const themeActive = Boolean(document.querySelector('[data-swup-theme]'));
-		const addTags = this.getTagsToAdd(oldTags, newTags, themeActive);
-		const removeTags = this.getTagsToRemove(oldTags, newTags, themeActive);
-
-		removeTags.reverse().forEach((item) => {
-			head.removeChild(item.tag);
-		});
-
-		addTags.forEach((item) => {
-			// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascaade
-			head.insertBefore(item.tag, head.children[item.index + 1] || null);
-		});
-
-		this.swup.log(`Removed ${removeTags.length} / added ${addTags.length} tags in head`);
-	};
-
-	compareTags = (oldTag, newTag) => {
-		const oldTagContent = oldTag.outerHTML;
-		const newTagContent = newTag.outerHTML;
-
-		return oldTagContent === newTagContent;
-	};
-
-	getTagsToRemove = (oldTags, newTags) => {
-		const removeTags = [];
-
-		for (let i = 0; i < oldTags.length; i++) {
-			let foundAt = null;
-
-			for (let j = 0; j < newTags.length; j++) {
-				if (this.compareTags(oldTags[i], newTags[j])) {
-					foundAt = j;
-					break;
-				}
-			}
-
-			if (foundAt == null && oldTags[i].getAttribute('data-swup-theme') === null && !this.isPersistentTag(oldTags[i])) {
-				removeTags.push({ tag: oldTags[i] });
-			}
+		this.swup.log(`Removed ${removed.length} / added ${added.length} tags in head`);
+		if (lang) {
+			this.swup.log(`Updated lang attribute: ${lang}`);
 		}
 
-		return removeTags;
-	};
-
-	getTagsToAdd = (oldTags, newTags, themeActive) => {
-		const addTags = [];
-
-		for (let i = 0; i < newTags.length; i++) {
-			let foundAt = null;
-
-			for (let j = 0; j < oldTags.length; j++) {
-				if (this.compareTags(oldTags[j], newTags[i])) {
-					foundAt = j;
-					break;
-				}
-			}
-
-			if (foundAt == null) {
-				addTags.push({ index: themeActive ? i + 1 : i, tag: newTags[i] });
-			}
+		if (this.options.awaitAssets) {
+			this.assetLoadPromises = waitForAssets(added, this.options.timeout);
+		} else {
+			this.assetLoadPromises = [];
 		}
 
-		return addTags;
+		newDocument.documentElement.innerHTML = '';
+		newDocument = null;
 	};
 
-	isPersistentTag = (item) => {
-		const { persistTags } = this.options
+	replaceContentAfterAssetsLoaded(...originalArgs) {
+		if (this.assetLoadPromises.length) {
+			this.swup.log(`Waiting for ${this.assetLoadPromises.length} assets to load`);
+			return new Promise((resolve) => {
+				Promise.all(this.assetLoadPromises).then(() => {
+					this.assetLoadPromises = [];
+					this.originalSwupReplaceContent(...originalArgs).then(resolve);
+				});
+			});
+		} else {
+			return this.originalSwupReplaceContent(...originalArgs);
+		}
+	}
+
+	isPersistentTag = (el) => {
+		const { persistTags } = this.options;
 		if (typeof persistTags === 'function') {
-			return persistTags(item);
+			return persistTags(el);
 		}
 		if (typeof persistTags === 'string') {
-			return item.matches(persistTags);
+			return el.matches(persistTags);
 		}
 		return Boolean(persistTags);
-	};
-
-	updateHtmlLangAttribute = () => {
-		const html = document.documentElement;
-
-		const newPage = new DOMParser().parseFromString(
-			this.swup.cache.getCurrentPage().originalContent,
-			'text/html'
-		);
-		const newLang = newPage.documentElement.lang;
-
-		if (html.lang !== newLang) {
-			this.swup.log(`Updated lang attribute: ${html.lang} > ${newLang}`);
-			html.lang = newLang;
-		}
 	};
 }

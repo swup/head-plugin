@@ -1,11 +1,10 @@
 # Swup Head Plugin
 
-Plugin serves to replace the contents of head tag when the content of the page is replaced.
-Primary reason for this can be usage of different style files included with a `link` for different pages.
+This plugin will replace the contents of the `<head>` on each page visit.
+Useful for adding different stylesheets or meta tags that would otherwise go
+ignored.
 
-**Note:** This plugin is rather experimental and any improvements or comments are more than welcome.
-
-## Instalation
+## Installation
 
 This plugin can be installed with npm
 
@@ -70,5 +69,17 @@ new SwupHeadPlugin({
 
   // Use a function to determine whether to keep a tag
   persistTags: (tag) => tag.children.length > 1
+})
+```
+
+### awaitAssets
+
+Setting this to `true` will delay the transition to the new page until all newly
+added assets have finished loading, imitating the standard browser behavior of render-blocking requests. Currently only supports stylesheets.
+Defaults to `false`.
+
+```javascript
+new SwupHeadPlugin({
+  awaitAssets: true
 })
 ```
