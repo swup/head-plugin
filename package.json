@@ -1,8 +1,8 @@
 {
   "name": "@swup/head-plugin",
   "version": "1.3.0",
-  "description": "Swup plugin for replacing contents of head tag.",
   "amdName": "SwupHeadPlugin",
+  "description": "A swup plugin for updating the contents of the head tag",
   "type": "module",
   "source": "src/index.js",
   "main": "./dist/index.cjs",
