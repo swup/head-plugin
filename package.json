@@ -1,7 +1,7 @@
 {
   "name": "@swup/head-plugin",
-  "version": "1.3.0",
   "amdName": "SwupHeadPlugin",
+  "version": "2.0.0",
   "description": "A swup plugin for updating the contents of the head tag",
   "type": "module",
   "source": "src/index.js",
