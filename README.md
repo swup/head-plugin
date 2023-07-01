@@ -2,8 +2,9 @@
 
 A [swup](https://swup.js.org) plugin for updating the contents of the head tag.
 
-Whenever a new page was loaded, this will add any meta tags and assets from the new page to the
-current document. Supports delaying the transition until new stylesheets have loaded.
+- Adds any meta tags and assets from the next page to the current document
+- Updates the lang attribute of the html element
+- Supports delaying the transition until new stylesheets have loaded
 
 ## Installation
 
