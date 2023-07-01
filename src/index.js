@@ -7,6 +7,8 @@ import waitForAssets from './waitForAssets.js';
 export default class SwupHeadPlugin extends Plugin {
 	name = 'SwupHeadPlugin';
 
+	requires = { swup: '>=4' };
+
 	defaults = {
 		persistTags: false,
 		persistAssets: false,
