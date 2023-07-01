@@ -14,8 +14,6 @@ export default class SwupHeadPlugin extends Plugin {
 		timeout: 3000
 	};
 
-	assetLoadPromises = [];
-
 	constructor(options = {}) {
 		super();
 
@@ -33,11 +31,6 @@ export default class SwupHeadPlugin extends Plugin {
 
 	unmount() {
 		this.swup.hooks.off('replaceContent', this.updateHead);
-
-		if (this.originalSwupReplaceContent) {
-			this.swup.replaceContent = this.originalSwupReplaceContent;
-			this.originalSwupReplaceContent = null;
-		}
 	}
 
 	updateHead = async (context, { page: { html } }) => {
@@ -53,8 +46,8 @@ export default class SwupHeadPlugin extends Plugin {
 
 		if (this.options.awaitAssets) {
 			const assetLoadPromises = waitForAssets(added, this.options.timeout);
-			if (this.assetLoadPromises.length) {
-				this.swup.log(`Waiting for ${this.assetLoadPromises.length} assets to load`);
+			if (assetLoadPromises.length) {
+				this.swup.log(`Waiting for ${assetLoadPromises.length} assets to load`);
 				await Promise.all(assetLoadPromises);
 			}
 		}
