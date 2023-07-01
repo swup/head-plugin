@@ -32,9 +32,6 @@
   "dependencies": {
     "@swup/plugin": "^2.0.0"
   },
-  "devDependencies": {
-    "swup": "^3.0.0"
-  },
   "peerDependencies": {
     "swup": "^3.0.0"
   },
