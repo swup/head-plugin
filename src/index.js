@@ -28,11 +28,11 @@ export default class SwupHeadPlugin extends Plugin {
 	}
 
 	mount() {
-		this.swup.hooks.before('replaceContent', this.updateHead);
+		this.swup.hooks.before('content:replace', this.updateHead);
 	}
 
 	unmount() {
-		this.swup.hooks.off('replaceContent', this.updateHead);
+		this.swup.hooks.off('content:replace', this.updateHead);
 	}
 
 	updateHead = async (context, { page: { html } }) => {
