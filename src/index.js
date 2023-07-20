@@ -28,17 +28,13 @@ export default class SwupHeadPlugin extends Plugin {
 	}
 
 	mount() {
-		this.swup.hooks.before('content:replace', this.updateHead);
+		this.before('content:replace', this.updateHead);
 	}
 
-	unmount() {
-		this.swup.hooks.off('content:replace', this.updateHead);
-	}
-
-	updateHead = async (context, { page: { html } }) => {
+	async updateHead(visit, { page: { html } }) {
 		const newDocument = new DOMParser().parseFromString(html, 'text/html');
 
-		const { removed, added } = mergeHeadContents(document.head, newDocument.head, { shouldPersist: this.isPersistentTag });
+		const { removed, added } = mergeHeadContents(document.head, newDocument.head, { shouldPersist: (el) => this.isPersistentTag(el) });
 		this.swup.log(`Removed ${removed.length} / added ${added.length} tags in head`);
 
 		const lang = updateLangAttribute(document.documentElement, newDocument.documentElement);
@@ -53,9 +49,9 @@ export default class SwupHeadPlugin extends Plugin {
 				await Promise.all(assetLoadPromises);
 			}
 		}
-	};
+	}
 
-	isPersistentTag = (el) => {
+	isPersistentTag(el) {
 		const { persistTags } = this.options;
 		if (typeof persistTags === 'function') {
 			return persistTags(el);
@@ -64,5 +60,5 @@ export default class SwupHeadPlugin extends Plugin {
 			return el.matches(persistTags);
 		}
 		return Boolean(persistTags);
-	};
+	}
 }
