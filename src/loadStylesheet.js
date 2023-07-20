@@ -1,4 +1,4 @@
-export default function waitForStylesheet(element, timeoutMs = 0) {
+export default function loadStylesheet(element, timeoutMs = 0) {
   const isLoaded = ({ href }) => {
     return Array.from(document.styleSheets).map(({ href }) => href).includes(href);
   };
