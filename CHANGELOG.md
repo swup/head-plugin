@@ -2,7 +2,7 @@
 
 <!-- ## [Unreleased] -->
 
-## [2.0.0] - 2023-07
+## [2.0.0] - 2023-07-26
 
 - Switch to microbundle
 - Export native ESM module
