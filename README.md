@@ -1,27 +1,27 @@
 # Swup Head Plugin
 
-This plugin will replace the contents of the `<head>` on each page visit.
-Useful for adding different stylesheets or meta tags that would otherwise go
-ignored.
+A [swup](https://swup.js.org) plugin for updating the contents of the head tag.
+
+- Adds any meta tags and assets from the next page to the current document
+- Updates the lang attribute of the html element
+- Supports delaying the transition until new stylesheets have loaded
 
 ## Installation
 
-This plugin can be installed with npm
+Install the plugin from npm and import it into your bundle.
 
 ```bash
 npm install @swup/head-plugin
 ```
 
-and included with import
-
-```javascript
+```js
 import SwupHeadPlugin from '@swup/head-plugin';
 ```
 
-or included from the dist folder
+Or include the minified production file from a CDN:
 
 ```html
-<script src="./dist/SwupHeadPlugin.js"></script>
+<script src="https://unpkg.com/@swup/head-plugin@2"></script>
 ```
 
 ## Usage

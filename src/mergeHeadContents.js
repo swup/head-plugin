@@ -1,10 +1,8 @@
 export default function mergeHeadContents(currentHead, newHead, { shouldPersist = () => false } = {}) {
-	const themeActive = Boolean(document.querySelector('[data-swup-theme]'));
-
 	const currentTags = Array.from(currentHead.children);
 	const newChildren = Array.from(newHead.children);
 
-	const addTags = getTagsToAdd(currentTags, newChildren, { themeActive });
+	const addTags = getTagsToAdd(currentTags, newChildren);
 	const removeTags = getTagsToRemove(currentTags, newChildren);
 
 	// Remove tags in reverse to keep indexes, keep persistant elements
@@ -13,7 +11,7 @@ export default function mergeHeadContents(currentHead, newHead, { shouldPersist 
 		.filter(({ el }) => !shouldPersist(el))
 		.forEach(({ el }) => currentHead.removeChild(el));
 
-	// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascaade
+	// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascade
 	addTags
 		.filter(({ el }) => shouldManageTag(el))
 		.forEach(({ el, index }) => {
@@ -29,19 +27,17 @@ export default function mergeHeadContents(currentHead, newHead, { shouldPersist 
 function getTagsToRemove(currentEls, newEls) {
 	return currentEls.reduce((tags, el) => {
 		const isAmongNew = newEls.some((newEl) => compareTags(el, newEl));
-		const isThemeTag = el.matches('[data-swup-theme]');
-		if (!isAmongNew && !isThemeTag) {
+		if (!isAmongNew) {
 			tags.push({ el });
 		}
 		return tags;
 	}, []);
 };
 
-function getTagsToAdd(currentEls, newEls, { themeActive }) {
-	return newEls.reduce((tags, el, i) => {
+function getTagsToAdd(currentEls, newEls) {
+	return newEls.reduce((tags, el, index) => {
 		const isAmongCurrent = currentEls.some((currentEl) => compareTags(el, currentEl));
 		if (!isAmongCurrent) {
-			const index = themeActive ? i + 1 : i;
 			tags.push({ el, index });
 		}
 		return tags;
@@ -49,7 +45,15 @@ function getTagsToAdd(currentEls, newEls, { themeActive }) {
 };
 
 function shouldManageTag(el) {
-	return el.localName !== 'title'; // swup manages title itself
+	// Let swup manage the title tag
+	if (el.localName === 'title') {
+		return false;
+	}
+	// Leave swup theme styles untouched
+	if (el.matches('[data-swup-theme]')) {
+		return false;
+	}
+	return true;
 }
 
 function compareTags(oldTag, newTag) {
