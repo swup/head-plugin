@@ -1,4 +1,10 @@
-export default function mergeHeadContents(currentHead, newHead, { shouldPersist = () => false } = {}) {
+type ElementCollection = { el: Element; index?: number }[];
+
+export default function mergeHeadContents(
+	currentHead: HTMLHeadElement,
+	newHead: HTMLHeadElement,
+	{ shouldPersist = () => false }: { shouldPersist?: (el: Element) => boolean } = {}
+) {
 	const currentTags = Array.from(currentHead.children);
 	const newChildren = Array.from(newHead.children);
 
@@ -6,7 +12,8 @@ export default function mergeHeadContents(currentHead, newHead, { shouldPersist 
 	const removeTags = getTagsToRemove(currentTags, newChildren);
 
 	// Remove tags in reverse to keep indexes, keep persistant elements
-	removeTags.reverse()
+	removeTags
+		.reverse()
 		.filter(({ el }) => shouldManageTag(el))
 		.filter(({ el }) => !shouldPersist(el))
 		.forEach(({ el }) => currentHead.removeChild(el));
@@ -14,37 +21,37 @@ export default function mergeHeadContents(currentHead, newHead, { shouldPersist 
 	// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascade
 	addTags
 		.filter(({ el }) => shouldManageTag(el))
-		.forEach(({ el, index }) => {
+		.forEach(({ el, index = 0 }) => {
 			currentHead.insertBefore(el, currentHead.children[index + 1] || null);
 		});
 
 	return {
 		removed: removeTags.map(({ el }) => el),
-		added: addTags.map(({ el }) => el),
+		added: addTags.map(({ el }) => el)
 	};
-};
+}
 
-function getTagsToRemove(currentEls, newEls) {
+function getTagsToRemove(currentEls: Element[], newEls: Element[]): ElementCollection {
 	return currentEls.reduce((tags, el) => {
 		const isAmongNew = newEls.some((newEl) => compareTags(el, newEl));
 		if (!isAmongNew) {
 			tags.push({ el });
 		}
 		return tags;
-	}, []);
-};
+	}, [] as ElementCollection);
+}
 
-function getTagsToAdd(currentEls, newEls) {
+function getTagsToAdd(currentEls: Element[], newEls: Element[]): ElementCollection {
 	return newEls.reduce((tags, el, index) => {
 		const isAmongCurrent = currentEls.some((currentEl) => compareTags(el, currentEl));
 		if (!isAmongCurrent) {
 			tags.push({ el, index });
 		}
 		return tags;
-	}, []);
-};
+	}, [] as ElementCollection);
+}
 
-function shouldManageTag(el) {
+function shouldManageTag(el: Element) {
 	// Let swup manage the title tag
 	if (el.localName === 'title') {
 		return false;
@@ -56,6 +63,6 @@ function shouldManageTag(el) {
 	return true;
 }
 
-function compareTags(oldTag, newTag) {
+function compareTags(oldTag: Element, newTag: Element) {
 	return oldTag.outerHTML === newTag.outerHTML;
 }
