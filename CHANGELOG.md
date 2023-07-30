@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [2.1.0] - 2023-07-30
+
+- Port to TypeScript
+
 ## [2.0.0] - 2023-07-26
 
 - Switch to microbundle
@@ -28,8 +32,9 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/swup/head-plugin/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/swup/head-plugin/compare/2.1.0...HEAD
 
+[2.1.0]: https://github.com/swup/head-plugin/releases/tag/2.1.0
 [2.0.0]: https://github.com/swup/head-plugin/releases/tag/2.0.0
 [1.3.0]: https://github.com/swup/head-plugin/releases/tag/1.3.0
 [1.2.1]: https://github.com/swup/head-plugin/releases/tag/1.2.1
