@@ -1,7 +1,7 @@
 {
   "name": "@swup/head-plugin",
   "amdName": "SwupHeadPlugin",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A swup plugin for updating the contents of the head tag",
   "type": "module",
   "source": "src/index.ts",
@@ -20,10 +20,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "swup-plugin build",
-    "dev": "swup-plugin dev",
-    "lint": "swup-plugin lint",
-    "format": "swup-plugin format",
+    "build": "swup package:build",
+    "dev": "swup package:dev",
+    "lint": "swup package:lint",
+    "format": "swup package:format",
     "prepublishOnly": "npm run build"
   },
   "author": {
@@ -31,13 +31,28 @@
     "email": "gmarcuk@gmail.com",
     "url": "https://gmrchk.com/"
   },
+  "contributors": [
+    {
+      "name": "Philipp Daun",
+      "email": "daun@daun.ltd",
+      "url": "https://philippdaun.net"
+    },
+    {
+      "name": "Rasso Hilber",
+      "email": "mail@rassohilber.com",
+      "url": "https://rassohilber.com"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/swup/head-plugin.git"
   },
   "dependencies": {
-    "@swup/plugin": "^3.0.0"
+    "@swup/plugin": "^4.0.0"
+  },
+  "devDependencies": {
+    "@swup/cli": "^5.0.1"
   },
   "peerDependencies": {
     "swup": "^4.0.0"
