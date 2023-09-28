@@ -1,6 +1,8 @@
 # Changelog
 
-<!-- ## [Unreleased] -->
+## [2.1.2] - 2023-07-30
+
+- Use `@swup/cli` for bundling
 
 ## [2.1.1] - 2023-07-30
 
@@ -36,8 +38,7 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/swup/head-plugin/compare/2.1.1...HEAD
-
+[2.1.2]: https://github.com/swup/head-plugin/releases/tag/2.1.2
 [2.1.1]: https://github.com/swup/head-plugin/releases/tag/2.1.1
 [2.1.0]: https://github.com/swup/head-plugin/releases/tag/2.1.0
 [2.0.0]: https://github.com/swup/head-plugin/releases/tag/2.0.0
