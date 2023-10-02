@@ -34,6 +34,14 @@ const swup = new Swup({
 });
 ```
 
+## Markup
+
+When using `noscript` tags inside the head, make sure they only contain the
+[node types allowed inside the head element](https://html.spec.whatwg.org/multipage/dom.html#metadata-content-2).
+Otherwise, the browser will implicitly close the head element and interpret them as part of the
+body, most probably breaking this plugin and leading to unforseen results.
+See [the following issue](https://github.com/swup/head-plugin/issues/40) for details and a fix.
+
 ## Options
 
 ### persistAssets
