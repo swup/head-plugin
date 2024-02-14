@@ -19,7 +19,7 @@ type Options = {
 export default class SwupHeadPlugin extends Plugin {
 	name = 'SwupHeadPlugin';
 
-	requires = { swup: '>=4' };
+	requires = { swup: '>=4.6' };
 
 	defaults: Options = {
 		persistTags: false,
