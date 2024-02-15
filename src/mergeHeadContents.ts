@@ -22,7 +22,7 @@ export default function mergeHeadContents(
 	addTags
 		.filter(({ el }) => shouldManageTag(el))
 		.forEach(({ el, index = 0 }) => {
-			currentHead.insertBefore(el, currentHead.children[index + 1] || null);
+			currentHead.insertBefore(el.cloneNode(true), currentHead.children[index + 1] || null);
 		});
 
 	return {

@@ -19,7 +19,7 @@ type Options = {
 export default class SwupHeadPlugin extends Plugin {
 	name = 'SwupHeadPlugin';
 
-	requires = { swup: '>=4' };
+	requires = { swup: '>=4.6' };
 
 	defaults: Options = {
 		persistTags: false,
@@ -45,7 +45,7 @@ export default class SwupHeadPlugin extends Plugin {
 	}
 
 	updateHead: Handler<'content:replace'> = async (visit, { page: { html } }) => {
-		const newDocument = new DOMParser().parseFromString(html, 'text/html');
+		const newDocument = visit.to.document!;
 
 		const { removed, added } = mergeHeadContents(document.head, newDocument.head, {
 			shouldPersist: (el) => this.isPersistentTag(el)
