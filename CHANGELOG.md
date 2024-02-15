@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.0] - 2024-02-15
+
+- Improve performance by reusing parsed document throughout visit
+
 ## [2.1.2] - 2023-07-30
 
 - Use `@swup/cli` for bundling
@@ -38,6 +42,7 @@
 
 - Initial release
 
+[2.2.0]: https://github.com/swup/head-plugin/releases/tag/2.2.0
 [2.1.2]: https://github.com/swup/head-plugin/releases/tag/2.1.2
 [2.1.1]: https://github.com/swup/head-plugin/releases/tag/2.1.1
 [2.1.0]: https://github.com/swup/head-plugin/releases/tag/2.1.0
