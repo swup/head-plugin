@@ -2,11 +2,14 @@
   "include": ["src"],
   "compilerOptions": {
     "target": "es2022",
-		"module": "NodeNext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "rootDirs": ["./src"],
     "resolveJsonModule": true,
+    "allowJs": true,
     "outDir": "./dist",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "noImplicitAny": true
   }
