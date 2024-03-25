@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mergeHeadContents > should add and remove tags from new head 1`] = `"<meta name="b" content="c">"`;
+
+exports[`mergeHeadContents > should keep tags present in new head and current head 1`] = `"<link rel="next" content="/">"`;
+
+exports[`mergeHeadContents > should keep the right order of tags 1`] = `"<link rel="1"><link rel="2"><link rel="6"><link rel="5">"`;
+
+exports[`mergeHeadContents > should leave title tags alone 1`] = `"<meta name="a" content="b">"`;
+
+exports[`mergeHeadContents > should not remove persistent tags 1`] = `"<link rel="stylesheet"><meta name="a" content="b">"`;
+
+exports[`mergeHeadContents > should remove tags from current head not present in new head 1`] = `"<link rel="next" content="/">"`;
