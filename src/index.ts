@@ -50,6 +50,7 @@ export default class SwupHeadPlugin extends Plugin {
 		const { removed, added } = mergeHeadContents(document.head, newDocument.head, {
 			shouldPersist: (el) => this.isPersistentTag(el)
 		});
+
 		this.swup.log(`Removed ${removed.length} / added ${added.length} tags in head`);
 
 		const lang = updateLangAttribute(document.documentElement, newDocument.documentElement);
