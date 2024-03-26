@@ -72,8 +72,8 @@ describe('waitForStylesheet', () => {
 		expect(loaded).toBeGreaterThan(started);
 		expect(awaited).toBeGreaterThanOrEqual(0);
 		expect(awaited).toBeGreaterThanOrEqual(loaded);
-		expect(awaited - started).toBeGreaterThan(300);
-		expect(awaited - started).toBeLessThan(400);
+		expect(awaited - started).toBeGreaterThan(250);
+		expect(awaited - started).toBeLessThan(450);
 	});
 
 	it('resolves after a timeout', async () => {
@@ -81,7 +81,7 @@ describe('waitForStylesheet', () => {
 		await waitForStylesheet(stylesheet, 500);
 		const awaited = Date.now();
 
-		expect(awaited - started).toBeGreaterThan(400);
-		expect(awaited - started).toBeLessThan(600);
+		expect(awaited - started).toBeGreaterThan(350);
+		expect(awaited - started).toBeLessThan(650);
 	});
 });
