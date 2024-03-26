@@ -1,5 +1,3 @@
-import fs from 'node:fs'
-import path from 'node:path'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { setupServer } from 'msw/node'
 import { HttpResponse, http } from 'msw'
@@ -17,10 +15,7 @@ const files = {
 const fileHandler = http.get('https://example.net/:file', ({ params }) => {
   const file = params.file as string;
   const contentType = file.endsWith('.css') ? 'text/css' : 'application/javascript';
-  const buffer = fs.readFileSync(path.resolve(process.cwd(), 'tests/unit/__fixtures__', file))
-  console.log('file', file, path.resolve(process.cwd(), 'tests/unit/__fixtures__', file), 'contentType', contentType, buffer);
-  return HttpResponse.arrayBuffer(buffer, { headers: { 'Content-Type': contentType } })
-  // return HttpResponse.text(files[path] ?? '', { headers: { 'Content-Type': contentType } });
+  return HttpResponse.text(files[file] ?? '', { headers: { 'Content-Type': contentType } });
 });
 
 const server = setupServer(fileHandler)
