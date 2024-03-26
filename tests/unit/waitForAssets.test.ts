@@ -58,7 +58,7 @@ describe('waitForStylesheet', () => {
 		stylesheet.href = 'https://example.net/screen.css';
 	});
 
-	it.only('waits for stylesheet to load', async () => {
+	it('waits for stylesheet to load', async () => {
 		let started: number = Date.now();
 		let loaded: number = 0;
 		let awaited: number = 0;
