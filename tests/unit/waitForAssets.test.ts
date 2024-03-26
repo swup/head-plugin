@@ -64,19 +64,16 @@ describe('waitForStylesheet', () => {
 		let awaited: number = 0;
 
 		stylesheet.onload = () => (loaded = Date.now());
-		setTimeout(() => document.head.appendChild(stylesheet), 150);
-		console.log(Array.from(document.styleSheets))
+		setTimeout(() => document.head.appendChild(stylesheet), 300);
 
-		await waitForStylesheet(stylesheet, 500);
+		await waitForStylesheet(stylesheet);
 		awaited = Date.now();
-
-		console.log(Array.from(document.styleSheets))
 
 		expect(loaded).toBeGreaterThan(started);
 		expect(awaited).toBeGreaterThanOrEqual(0);
 		expect(awaited).toBeGreaterThanOrEqual(loaded);
-		expect(awaited - started).toBeGreaterThan(100);
-		expect(awaited - started).toBeLessThan(300);
+		expect(awaited - started).toBeGreaterThan(300);
+		expect(awaited - started).toBeLessThan(400);
 	});
 
 	it('resolves after a timeout', async () => {

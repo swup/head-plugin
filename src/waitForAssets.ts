@@ -13,14 +13,8 @@ export function waitForStylesheet(
 	element: HTMLLinkElement,
 	timeoutMs: number = 0
 ): Promise<HTMLLinkElement> {
-	const isLoaded = ({ href }: HTMLLinkElement) => {
-		return Array.from(document.styleSheets)
-			.map(({ href }) => href)
-			.includes(href);
-	};
-
 	const whenLoaded = (cb: () => void) => {
-		if (isLoaded(element)) {
+		if (element.sheet) {
 			cb();
 		} else {
 			setTimeout(() => whenLoaded(cb), 10);
