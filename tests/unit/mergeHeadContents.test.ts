@@ -1,5 +1,3 @@
-// FILEPATH: /Users/philipp/Projects/@swup/head-plugin/tests/unit/mergeHeadContents.test.ts
-
 import { describe, expect, it } from 'vitest';
 import mergeHeadContents from '../../src/mergeHeadContents.js';
 
