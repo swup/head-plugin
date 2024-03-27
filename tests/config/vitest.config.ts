@@ -5,8 +5,6 @@
 
 import { defineConfig } from 'vitest/config';
 
-const browser = false;
-
 export default defineConfig({
 	test: {
 		environment: 'jsdom',
@@ -19,11 +17,5 @@ export default defineConfig({
 		include: ['tests/unit/**/*.test.ts'],
 		setupFiles: ['tests/config/vitest.setup.ts'],
 		testTimeout: 1000,
-		browser: browser ? {
-			enabled: true,
-			headless: true,
-			provider: 'playwright',
-			name: 'chromium',
-		} : undefined,
 	},
 });
