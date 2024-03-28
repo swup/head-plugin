@@ -58,7 +58,7 @@ a selector of `link[rel=stylesheet], script[src], style`.
 ```javascript
 new SwupHeadPlugin({
   persistAssets: true
-})
+});
 ```
 
 ### persistTags
@@ -77,7 +77,7 @@ new SwupHeadPlugin({
 
   // Use a function to determine whether to keep a tag
   persistTags: (tag) => tag.children.length > 1
-})
+});
 ```
 
 ### awaitAssets
@@ -89,5 +89,5 @@ Defaults to `false`.
 ```javascript
 new SwupHeadPlugin({
   awaitAssets: true
-})
+});
 ```

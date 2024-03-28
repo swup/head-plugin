@@ -4,7 +4,7 @@ export default function updateLangAttribute(
 ): string | null {
 	if (currentHtml.lang !== newHtml.lang) {
 		currentHtml.lang = newHtml.lang;
-		return currentHtml.lang;
+		return currentHtml.lang || null;
 	} else {
 		return null;
 	}
