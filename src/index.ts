@@ -72,7 +72,7 @@ export default class SwupHeadPlugin extends Plugin {
 		if (typeof persistTags === 'function') {
 			return persistTags(el);
 		}
-		if (typeof persistTags === 'string') {
+		if (typeof persistTags === 'string' && persistTags.length > 0) {
 			return el.matches(persistTags);
 		}
 		return Boolean(persistTags);
