@@ -3,7 +3,7 @@ import Swup, { Visit } from 'swup';
 import SwupHeadPlugin from '../../src/index.js';
 
 vitest.mock('../../src/mergeHeadContents.js');
-vitest.mock('../../src/updateLangAttribute.js');
+vitest.mock('../../src/updateAttributes.js');
 vitest.mock('../../src/waitForAssets.js');
 
 const page = { page: { html: '', url: '/' } };
@@ -63,15 +63,17 @@ describe('SwupHeadPlugin', () => {
 	});
 
 	it('updates lang attr from content:replace hook handler', async () => {
-		const updateLangAttribute = await import('../../src/updateLangAttribute.js');
-		updateLangAttribute.default = vitest.fn().mockImplementation(() => 'fr');
+		const updateAttributes = await import('../../src/updateAttributes.js');
+		updateAttributes.default = vitest.fn().mockImplementation(() => 'fr');
 
 		swup.use(plugin);
+		plugin.options.attributes = ['lang', /^data-/];
 		plugin.updateHead(visit, page);
-		expect(updateLangAttribute.default).toHaveBeenCalledOnce();
-		expect(updateLangAttribute.default).toHaveBeenCalledWith(
+		expect(updateAttributes.default).toHaveBeenCalledOnce();
+		expect(updateAttributes.default).toHaveBeenCalledWith(
 			document.documentElement,
-			visit.to.document!.documentElement
+			visit.to.document!.documentElement,
+			['lang', /^data-/]
 		);
 	});
 
