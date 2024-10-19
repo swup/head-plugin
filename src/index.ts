@@ -2,7 +2,7 @@ import { Handler } from 'swup';
 import Plugin from '@swup/plugin';
 
 import mergeHeadContents from './mergeHeadContents.js';
-import updateLangAttribute from './updateLangAttribute.js';
+import updateAttributes from './updateAttributes.js';
 import waitForAssets from './waitForAssets.js';
 
 type Options = {
@@ -12,6 +12,8 @@ type Options = {
 	persistTags: boolean | string | ((el: Element) => boolean);
 	/** Delay the transition to the new page until all newly added assets have finished loading. Default: `false` */
 	awaitAssets: boolean;
+	/** Additional attributes of the head element to update. Default: ['lang', 'dir']. */
+	attributes: (string | RegExp)[];
 	/** How long to wait for assets before continuing anyway. Only applies if `awaitAssets` is enabled. Default: `3000` */
 	timeout: number;
 };
@@ -25,6 +27,7 @@ export default class SwupHeadPlugin extends Plugin {
 		persistTags: false,
 		persistAssets: false,
 		awaitAssets: false,
+		attributes: ['lang', 'dir'],
 		timeout: 3000
 	};
 	options: Options;
@@ -45,6 +48,8 @@ export default class SwupHeadPlugin extends Plugin {
 	}
 
 	updateHead: Handler<'content:replace'> = async (visit, { page: { html } }) => {
+		const { awaitAssets, attributes, timeout } = this.options;
+
 		const newDocument = visit.to.document!;
 
 		const { removed, added } = mergeHeadContents(document.head, newDocument.head, {
@@ -53,13 +58,12 @@ export default class SwupHeadPlugin extends Plugin {
 
 		this.swup.log(`Removed ${removed.length} / added ${added.length} tags in head`);
 
-		const lang = updateLangAttribute(document.documentElement, newDocument.documentElement);
-		if (lang) {
-			this.swup.log(`Updated lang attribute: ${lang}`);
+		if (attributes?.length) {
+			updateAttributes(document.documentElement, newDocument.documentElement, attributes);
 		}
 
-		if (this.options.awaitAssets) {
-			const assetLoadPromises = waitForAssets(added, this.options.timeout);
+		if (awaitAssets) {
+			const assetLoadPromises = waitForAssets(added, timeout);
 			if (assetLoadPromises.length) {
 				this.swup.log(`Waiting for ${assetLoadPromises.length} assets to load`);
 				await Promise.all(assetLoadPromises);
