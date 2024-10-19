@@ -3,7 +3,7 @@
 A [swup](https://swup.js.org) plugin for updating the contents of the head tag.
 
 - Adds any meta tags and assets from the next page to the current document
-- Updates the lang attribute of the html element
+- Updates the lang and dir attributes of the html element
 - Supports delaying the transition until new stylesheets have loaded
 
 ## Installation
@@ -90,4 +90,16 @@ Defaults to `false`.
 new SwupHeadPlugin({
   awaitAssets: true
 });
+```
+
+### attributes
+
+Update additional attributes of the html element. By default, the `lang` and `dir` attributes are
+updated, but you can define a custom list of attributes here. Accepts an array of strings or
+regular expression instances.
+
+```javascript
+{
+  attributes: ['lang', 'dir', 'style', /^data-/]
+}
 ```

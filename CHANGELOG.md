@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.3.0] - 2024-10-19
+
+- Update html element's `dir` attribute
+- Allow updating additional html element attributes
+
 ## [2.2.1] - 2024-09-09
 
 - Ignore empty string passed into `persistTags` option (@NukeJS)
@@ -46,6 +51,7 @@
 
 - Initial release
 
+[2.3.0]: https://github.com/swup/head-plugin/releases/tag/2.3.0
 [2.2.1]: https://github.com/swup/head-plugin/releases/tag/2.2.1
 [2.2.0]: https://github.com/swup/head-plugin/releases/tag/2.2.0
 [2.1.2]: https://github.com/swup/head-plugin/releases/tag/2.1.2
