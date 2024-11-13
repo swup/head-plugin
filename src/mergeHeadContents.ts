@@ -19,15 +19,14 @@ export default function mergeHeadContents(
 		.forEach(({ el }) => currentHead.removeChild(el));
 
 	// Insert tag *after* previous version of itself to preserve JS variable scope and CSS cascade
-    const newAddTags = addTags
-    .filter(({ el }) => shouldManageTag(el))
-    .map((tag) => {
-        let newEl = tag.el.cloneNode(true) as Element;
-        currentHead.insertBefore(newEl, currentHead.children[(tag.index || 0) + 1] || null);
+	const newAddTags = addTags
+		.filter(({ el }) => shouldManageTag(el))
+		.map((tag) => {
+			let newEl = tag.el.cloneNode(true) as Element;
+			currentHead.insertBefore(newEl, currentHead.children[(tag.index || 0) + 1] || null);
 
-        return { ...tag, el: newEl };
-    });
-
+			return { ...tag, el: newEl };
+		});
 
 	return {
 		removed: removeTags.map(({ el }) => el),
